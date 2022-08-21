@@ -8,6 +8,12 @@ document.addEventListener('DOMContentLoaded', function () {
   if (isStorageExist()) {
     loadDataFromStorage();
   }
+
+  const searchBookForm = document.querySelector('#searchBook');
+  searchBookForm.addEventListener('submit', function (event) {
+    event.preventDefault();
+    searchBook();
+  })
 });
 
 const books = [];
@@ -71,6 +77,34 @@ function saveData() {
     localStorage.setItem(STORAGE_KEY, parsed);
     document.dispatchEvent(new Event(SAVED_EVENT));
   }
+}
+
+function searchBook() {
+  const queryTitle = document.querySelector('#searchBookTitle');
+
+  const incompleteBookshelfList = document.getElementById('incompleteBookshelfList');
+  incompleteBookshelfList.innerHTML = '';
+
+  const completeBookshelfList = document.getElementById('completeBookshelfList');
+  completeBookshelfList.innerHTML = '';
+
+  let result = 0;
+
+  books.filter((book) => {
+    if (book.title.toLowerCase() == queryTitle.value.toLowerCase().trim()) {
+      result++;
+      const bookElement = makeBook(book);
+      if (!book.isCompleted)
+        incompleteBookshelfList.append(bookElement);
+      else
+        completeBookshelfList.append(bookElement);
+    }
+  });
+
+  if (result == 0) {
+    alert('Buku tidak ditemukan')
+    location.reload();
+  };
 }
 
 document.addEventListener(RENDER_EVENT, function () {
